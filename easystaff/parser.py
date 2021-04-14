@@ -47,6 +47,7 @@ class EasyStaff:
             "_responsive": "responsive"
         })
         assert auth_res.status_code == 200
+        assert "Autenticazione non riuscita" not in auth_res
 
     def _easystaff_login(self):
         check_res = self.session.get("https://orari-be.divsi.unimi.it/EasyAcademy/auth/auth_app.php", params=(
