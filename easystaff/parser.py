@@ -13,10 +13,7 @@ class EasyStaff:
         self.username = username
         self._password = password
         self.cf_code = cf_code
-        if excludes is None:
-            self.excludes = []
-        else:
-            self.excludes = excludes
+        self.excludes = [] if excludes is None else excludes
         self._access_token = None
 
     def _get_prelogin_params(self):
