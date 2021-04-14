@@ -7,13 +7,16 @@ from easystaff import const
 
 
 class EasyStaff:
-    def __init__(self, username, password, cf_code):
+    def __init__(self, username, password, cf_code, excludes=None):
         self.session = requests.Session()
         self.session.headers.update(const.USE_HEADERS)
         self.username = username
         self._password = password
         self.cf_code = cf_code
-        self.excludes = []
+        if excludes is None:
+            self.excludes = []
+        else:
+            self.excludes = excludes
         self._access_token = None
 
     def _get_prelogin_params(self):
@@ -43,7 +46,6 @@ class EasyStaff:
             "_eventId": "submit",
             "_responsive": "responsive"
         })
-        print(auth_res.text)
         assert auth_res.status_code == 200
 
     def _easystaff_login(self):
@@ -100,3 +102,4 @@ class EasyStaff:
             ('id_btn_element', f"{lecture_id}"),
         ))
         assert booking_res.status_code == 200
+        print(lecture_id, "Booked") # DEBUG / Can be changed to make the user aware of the booking
