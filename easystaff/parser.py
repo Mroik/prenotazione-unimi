@@ -86,7 +86,7 @@ class EasyStaff:
         for lecture in lectures:
             for booking in lecture["prenotazioni"]:
                 entry_id = booking["entry_id"]
-                if entry_id not in self.excludes:
+                if booking["nome"] not in self.excludes:
                     available_bookings.append(entry_id)
         self.session.close()
         return available_bookings
