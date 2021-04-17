@@ -80,14 +80,13 @@ class EasyStaff:
         exp = re.compile(r"JSON\.parse\(\'(.*)\'")  # bad code inherited from bad code
         groups = exp.findall(lectures_page_res.text)
         assert len(groups) > 0
-        lectures = json.loads(groups[0])
+        days = json.loads(groups[0])
 
         available_bookings = []
-        for lecture in lectures:
-            for booking in lecture["prenotazioni"]:
-                entry_id = booking["entry_id"]
-                if booking["nome"] not in self.excludes:
-                    available_bookings.append(entry_id)
+        for day in days:
+            for lecture in day["prenotazioni"]:
+                if lecture["nome"] not in self.excludes:
+                    available_bookings.append({**lecture, "data": day["data"]})
         self.session.close()
         return available_bookings
 
