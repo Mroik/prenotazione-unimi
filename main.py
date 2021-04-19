@@ -1,7 +1,6 @@
 import argparse
-import os
 
-import easystaff
+from easystaff import helpers
 
 root = argparse.ArgumentParser(add_help=True)
 root.add_argument("-u", "--username", help="your unimi email (e.g. mario.rossi@studenti.unimi.it)", type=str)
@@ -15,57 +14,92 @@ def argument(*name_or_flags, **kwargs):
     return list(name_or_flags), kwargs
 
 
-def subcommand(args=None, parent=actions):
-    if args is None:
-        args = list()
+def subcommand(items=None, parent=actions):
+    if items is None:
+        items = list()
 
     def decorator(func):
         parser = parent.add_parser(func.__name__.rstrip("_"), description=func.__doc__)
-        for arg in args:
-            parser.add_argument(*arg[0], **arg[1])
+        for item in items:
+            if type(item) is list:
+                group = parser.add_mutually_exclusive_group()
+                for arg in item:
+                    group.add_argument(*arg[0], **arg[1])
+                continue
+            parser.add_argument(*item[0], **item[1])
         parser.set_defaults(func=func)
     return decorator
 
 
-def login(args):
-    username = os.environ.get("UNIMI_USERNAME", None if not hasattr(args, "username") else args.username)
-    password = os.environ.get("UNIMI_PASSWORD", None if not hasattr(args, "password") else args.password)
-    if not username or not password:
-        return print("PROVIDE USERNAME AND PASSWORD!!1")  # TODO: proper exception
-    cf_code = os.environ.get("UNIMI_CF", None if not hasattr(args, "cf") else args.cf)
-    return easystaff.EasyStaff(username=username, password=password, cf_code=cf_code)
-
-
 @subcommand()
 def list_(args):
-    ef = login(args)
-    lectures = ef.get_available_bookings()
-    max_lengths = [0, 0, 0, 0]  # used by the simple tabulator
-    text = ""
-    for lecture in lectures:
-        date_str = lecture["data"].ljust(max_lengths[0])
-        hours_str = f"{lecture['ora_inizio']}-{lecture['ora_fine']}".ljust(max_lengths[1])
-        room_str = lecture["aula"].ljust(max_lengths[2])
-        lecture_str = lecture["nome"].ljust(max_lengths[3])
-        max_lengths = [
-            len(date_str) if len(date_str) > max_lengths[0] else max_lengths[0],
-            len(hours_str) if len(hours_str) > max_lengths[1] else max_lengths[1],
-            len(room_str) if len(room_str) > max_lengths[2] else max_lengths[2],
-            len(lecture_str) if len(lecture_str) > max_lengths[3] else max_lengths[3],
-        ]
-        text += "\n" + "\t".join([date_str, hours_str, room_str, lecture_str])
-    text = "\t".join([
-        "Date".ljust(max_lengths[0]),
-        "Hours".ljust(max_lengths[1]),
-        "Room".ljust(max_lengths[2]),
-        "Lecture name".ljust(max_lengths[3])
-    ]) + "\n" + "\t".join([(n * "-").ljust(n) for n in max_lengths]) + text
-    print(text)
+    es = helpers.login(args)
+    lectures = es.get_all_lectures()
+    helpers.print_lectures(lectures)
 
 
-@subcommand([argument("--date", "-d"), argument("--cf")])
+@subcommand([
+    argument(
+        "--dry-run", "-D",
+        help="dry run, don't really book anything",
+        action='store_true',
+    ),
+    argument(
+        "--fiscal-code", "-cf",
+        help="your IT fiscal code (e.g. RSAMRA70A41F205Z). you can use the UNIMI_CF environment variable, too."
+    ),
+    [
+        argument(
+            "--all", "-a",
+            help="book ALL the available lectures (use this with responsibility)",
+            action="store_true",
+        ),
+        argument(
+            "--date", "-d",
+            help="book the lectures of a specificed date (e.g. 'today', 'tomorrow', '31/12/2020')"
+        ),
+        argument(
+            "--id",
+            help="book a specific lesson with its ID",
+            nargs='+',
+            type=int,
+        )
+    ],
+    argument(
+        "--exclude", "-e",
+        help="exclude the lectures who's names contain the specified string",
+        nargs='+',
+    ),
+])
 def book(args):
-    pass
+    """
+        Example usages:
+        book -cf abc -a
+        book -cf abc --exclude "linguaggi formali e automi"
+        book -cf abc --date today
+        book -cf abc --id 123132
+    """
+    if not args.all and not args.date and not args.id:
+        raise ValueError("Use --help to see usage")
+
+    es = helpers.login(args, cf_code_required=True)
+    lectures = es.get_all_lectures()
+    date = helpers.parse_date(args.date)
+    booked = []
+    for lecture in lectures:
+        if args.date and date != lecture["date"]:
+            continue
+        if args.id and lecture["entry_id"] not in args.id:
+            continue
+        if args.exclude and any([bool(s.lower() in lecture["nome"].lower()) for s in args.exclude]):
+            continue
+        es.book_lecture(lecture["entry_id"], dummy=args.dry_run)
+        booked.append(lecture)
+    if len(booked) > 0:
+        print(f"Booked {len(booked)} lectures.")
+        helpers.print_lectures(booked)
+    else:
+        print("No lectures matched the provided filters.")
 
 
 if __name__ == "__main__":
