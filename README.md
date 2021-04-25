@@ -4,12 +4,11 @@ Idealmente è uno script da utilizzare con cron.
 
 Utilizzo
 =======
-```
-./prenotaLezioni.py <e-mail d'ateneo> <password> <codice fiscale> [lezione da escludere 1] [lezione da escludere 2] ... [lezione da escludere N]
-```
+Per vedere tutti gli utilizzi esegui `python3 main.py --help`. Puoi specificare i parametri `--username`, `--password` 
+e `--cf-code` utilizzando rispettivamente le variabili d'ambiente `UNIMI_USERNAME`, `UNIMI_PASSWORD` e `UNIMI_CF`.
 Se voleste utilizzarlo in cron la mia configurazione è
 ```
-0 19 * * * prenotaLezioni "mroik@studenti.unimi.it" "$(kwallet-query -f Passwords -r unimi default)" "MRKMRK69R13E200C" "Architettura degli elaboratori II - teoria ed. 2" "Logica matematica - lab. turno B"
+0 19 * * * python3 main.py -u "mroik@studenti.unimi.it" -p "$(kwallet-query -f Passwords -r unimi default)" book --cf-code "MRKMRK69R13E200C" --exclude "linguaggi formali e automi"
 ```
 
 Prima di poterlo usare comunque avrete bisogno di configurare il vostro profilo sul sito per le prenotazioni, altrimenti lo script non riuscirà
