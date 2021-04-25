@@ -4,19 +4,20 @@ from datetime import datetime, timedelta
 import easystaff
 
 
-def print_lectures(lectures):
+def print_lectures(lectures, just_booked=False):
     # used by the tabulator; probably bad code but it works just fine...
     max_lengths = [len("ID"), len("Date"), len("Hours"), len("Room"),
                    len("Lecture name"), len("Seats left"), len("Booked?")]
     text = ""
     for lecture in lectures:
+        fix_booked = not lecture["prenotata"] and just_booked
         id_str = (str(lecture["entry_id"]))
         date_str = lecture["date"].strftime("%d/%m/%Y")
         hours_str = f"{lecture['ora_inizio']}-{lecture['ora_fine']}"
         room_str = lecture["aula"]
         lecture_str = lecture["nome"]
-        seats_left_str = f"{lecture['capacita'] - lecture['presenti']}/{lecture['capacita']}"
-        booked = ("yes️" if lecture["prenotata"] else "no")
+        seats_left_str = f"{lecture['capacita'] - lecture['presenti'] - 1 if fix_booked else 0}/{lecture['capacita']}"
+        booked = ("yes️" if lecture["prenotata"] or fix_booked else "no")
         max_lengths = [
             len(id_str) if len(id_str) > max_lengths[0] else max_lengths[0],
             len(date_str) if len(date_str) > max_lengths[1] else max_lengths[1],

@@ -19,7 +19,9 @@ def subcommand(items=None, parent=actions):
         items = list()
 
     def decorator(func):
-        parser = parent.add_parser(func.__name__.rstrip("_"), description=func.__doc__)
+        parser = parent.add_parser(func.__name__.rstrip("_"),
+                                   description=func.__doc__,
+                                   formatter_class=argparse.RawTextHelpFormatter)
         for item in items:
             if type(item) is list:
                 group = parser.add_mutually_exclusive_group()
@@ -72,13 +74,12 @@ def list_(args):
     ),
 ])
 def book(args):
-    """
-        Example usages:
-        book -cf abc -a
-        book -cf abc --exclude "linguaggi formali e automi"
-        book -cf abc --date today
-        book -cf abc --id 123132
-    """
+    """Book one or more lectures.
+Example usages:
+book -cf abc -a
+book -cf abc --exclude "linguaggi formali e automi"
+book -cf abc --date today
+book -cf abc --id 123132"""
     if not args.all and not args.date and not args.id:
         raise ValueError("Use --help to see usage")
 
@@ -97,7 +98,7 @@ def book(args):
         booked.append(lecture)
     if len(booked) > 0:
         print(f"Booked {len(booked)} lectures.")
-        helpers.print_lectures(booked)
+        helpers.print_lectures(booked, just_booked=True)
     else:
         print("No lectures matched the provided filters.")
 
