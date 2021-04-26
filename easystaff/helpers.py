@@ -58,7 +58,7 @@ def login(args, cf_code_required=False):
     if not password:
         raise ValueError("Please provide your UniMi password via the --password parameter or "
                          "the UNIMI_PASSWORD environment variable.")
-    cf_code = os.environ.get("UNIMI_CF", None if not hasattr(args, "cf") else args.cf)
+    cf_code = os.environ.get("UNIMI_CF", None if not hasattr(args, "fiscal_code") else args.fiscal_code)
     if cf_code_required and not cf_code:
         raise ValueError("Please provide your italian fiscal code via the --fiscal-code parameter or "
                          "the UNIMI_CF environment variable.")
@@ -71,10 +71,32 @@ def parse_date(date):
     if date == "today":
         return datetime.today().date()
     elif date == "tomorrow":
-        return (datetime.today() + timedelta(days=1)).date()
-    parsed = datetime.strptime(date, "%d/%m/%Y").date()
+        return (datetime.today() + timedelta(days=1))
+    parsed = datetime.strptime(date, "%d/%m/%Y")
     if not parsed:
         raise ValueError("The provided date is invalid, use the %d/%m/%Y format.")
     if parsed < datetime.today().date():
         raise ValueError("The provided date is in the past.")
     return parsed
+
+
+def parse_weekday(days):
+    ris = []
+    for day in days:
+        if type(day) == type(0):
+            ris.append(day)
+        if day == "monday":
+            ris.append(0)
+        if day == "tuesday":
+            ris.append(1)
+        if day == "wednesday":
+            ris.append(2)
+        if day == "thursday":
+            ris.append(3)
+        if day == "friday":
+            ris.append(4)
+        if day == "saturday":
+            ris.append(5)
+        if day == "sunday":
+            ris.append(6)
+    return ris

@@ -72,6 +72,11 @@ def list_(args):
         help="exclude the lectures who's names contain the specified string",
         nargs='+',
     ),
+    argument(
+        "--exclude_day", "-ed",
+        help="exclude the lectures of the day i.e. monday",
+        nargs='+',
+    ),
 ])
 def book(args):
     """Book one or more lectures.
@@ -87,12 +92,17 @@ book -cf abc --id 123132"""
     lectures = es.get_all_lectures()
     date = helpers.parse_date(args.date)
     booked = []
+    args.exclude_day = helpers.parse_weekday(args.exclude_day)
+    print(args)
     for lecture in lectures:
         if args.date and date != lecture["date"]:
             continue
         if args.id and lecture["entry_id"] not in args.id:
             continue
         if args.exclude and any([bool(s.lower() in lecture["nome"].lower()) for s in args.exclude]):
+            continue
+        if lecture["date"].weekday() in args.exclude_day:
+            print("hey")
             continue
         es.book_lecture(lecture["entry_id"], dummy=args.dry_run)
         booked.append(lecture)

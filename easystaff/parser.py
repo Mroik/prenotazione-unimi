@@ -89,7 +89,7 @@ class EasyStaff:
             for lecture in day["prenotazioni"]:
                 if lecture["nome"] not in self.excludes:
                     available_bookings.append(
-                        {**lecture, "date": datetime.strptime(day["data"], "%d/%m/%Y").date()}
+                        {**lecture, "date": datetime.strptime(day["data"], "%d/%m/%Y")}
                     )
         self.session.close()
         return available_bookings
