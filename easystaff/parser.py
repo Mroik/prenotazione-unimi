@@ -1,7 +1,9 @@
-import requests
-from bs4 import BeautifulSoup
 import json
 import re
+from datetime import datetime
+
+import requests
+from bs4 import BeautifulSoup
 
 from easystaff import const
 
@@ -66,7 +68,7 @@ class EasyStaff:
         )
         assert login_res.status_code == 200
 
-    def get_available_bookings(self):
+    def get_all_lectures(self):
         lt_code, exec_code = self._get_prelogin_params()
         self._cas_login(lt_code, exec_code)
         self._easystaff_login()
@@ -80,18 +82,21 @@ class EasyStaff:
         exp = re.compile(r"JSON\.parse\(\'(.*)\'")  # bad code inherited from bad code
         groups = exp.findall(lectures_page_res.text)
         assert len(groups) > 0
-        lectures = json.loads(groups[0])
+        days = json.loads(groups[0])
 
         available_bookings = []
-        for lecture in lectures:
-            for booking in lecture["prenotazioni"]:
-                entry_id = booking["entry_id"]
-                if booking["nome"] not in self.excludes:
-                    available_bookings.append(entry_id)
+        for day in days:
+            for lecture in day["prenotazioni"]:
+                if lecture["nome"] not in self.excludes:
+                    available_bookings.append(
+                        {**lecture, "date": datetime.strptime(day["data"], "%d/%m/%Y")}
+                    )
         self.session.close()
         return available_bookings
 
-    def book_lecture(self, lecture_id):
+    def book_lecture(self, lecture_id, dummy=False):
+        if dummy:
+            return print("(DRY-RUN) Booking", lecture_id)
         booking_res = self.session.get("https://easystaff.divsi.unimi.it/PortaleStudenti/call_ajax.php", params=(
             ('language', 'it'),
             ('mode', 'salva_prenotazioni'),
@@ -100,4 +105,3 @@ class EasyStaff:
             ('id_btn_element', f"{lecture_id}"),
         ))
         assert booking_res.status_code == 200
-        print(lecture_id, "Booked") # DEBUG / Can be changed to make the user aware of the booking
