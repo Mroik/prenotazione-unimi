@@ -73,7 +73,7 @@ def list_(args):
         nargs='+',
     ),
     argument(
-        "--exclude_day", "-ed",
+        "--exclude-day", "-ed",
         help="exclude the lectures of the day i.e. monday",
         nargs='+',
     ),
