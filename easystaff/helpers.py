@@ -83,7 +83,7 @@ def parse_date(date):
 def parse_weekday(days):
     ris = []
     for day in days:
-        if type(day) == type(0):
+        if type(day) == int:
             ris.append(day)
         if day == "monday":
             ris.append(0)
