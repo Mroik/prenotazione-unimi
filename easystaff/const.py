@@ -9,3 +9,5 @@ USE_HEADERS = {
     'Connection': 'keep-alive',
     'TE': 'Trailers',
 }
+LIBRARY_ENDPOINT = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/index.php"
+LIBRARY_AJAX_ENDPOINT = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/ajax.php"
