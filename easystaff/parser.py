@@ -165,7 +165,7 @@ class Library:
         avail_biblio = BeautifulSoup(resp.text, "html.parser").find_all(id="area")[0]
         libraries = {}
         for opt in avail_biblio.find_all("option"):
-            libraries.[opt["value"]] = opt.string.replace("\n", "").replace("\t", "")
+            libraries[opt["value"]] = opt.string.replace("\n", "").replace("\t", "")
         services = json.loads(re.findall("(?<=a_s = ){.*}", resp.text)[0])
         return libraries, services
 
@@ -176,7 +176,7 @@ class Library:
             ("area", library),
             ("servizio", service)
         ))
-        return json.loads(resp.text)
+        return resp.json()
 
     # Returns the available timeslots in datetime format, this way we can
     # extract date and time from it, the website itself uses unix timestamps,
