@@ -7,6 +7,7 @@ class SiLab:
     def __init__(self):
         self.token = None
         self.session = requests.Session()
+        self.session.headers.update(const.USE_HEADERS)
 
     def get_slots(self):
         resp = self.session.post(const.ENDPOINT_SILAB_SLOTS)
