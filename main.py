@@ -1,6 +1,6 @@
 import argparse
 
-from easystaff import helpers
+from src import helpers
 
 root = argparse.ArgumentParser(add_help=True)
 root.add_argument("-u", "--username", help="your unimi email (e.g. mario.rossi@studenti.unimi.it)", type=str)
