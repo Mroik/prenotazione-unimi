@@ -9,3 +9,6 @@ USE_HEADERS = {
     'Connection': 'keep-alive',
     'TE': 'Trailers',
 }
+ENDPOINT_SILAB_SLOTS = "https://api.di.unimi.it/rooms/slots"
+ENDPOINT_SILAB_LOGIN = "https://api.di.unimi.it/rooms/login"
+ENDPOINT_SILAB_BOOK = "https://api.di.unimi.it/rooms/book/1/"

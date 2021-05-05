@@ -105,3 +105,36 @@ class EasyStaff:
             ('id_btn_element', f"{lecture_id}"),
         ))
         assert booking_res.status_code == 200
+
+
+class SiLab:
+    def __init__(self):
+        self.token = None
+        self.session = requests.Session()
+
+    def get_slots(self):
+        resp = self.session.post(const.ENDPOINT_SILAB_SLOTS)
+        return resp.json()["rooms"]
+
+    def login(self, user, pwd):
+        resp = self.session.post(
+                const.ENDPOINT_SILAB_LOGIN,
+                data={
+                    "username": user,
+                    "password": pwd
+                }
+        )
+        self.token = resp.json()["jwt"]
+        if self.token != "":
+            return True
+        self.token = None
+        return False
+
+    def book_slot(slotid):
+        resp = self.session.post(
+                const.ENDPOINT_SILAB_BOOK + slotid,
+                headers={
+                    "authorization": "Bearer " + token
+                }
+        )
+        return True if resp.json()["status"] == "success" else False
