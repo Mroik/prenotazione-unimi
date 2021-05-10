@@ -10,7 +10,12 @@ class SiLab:
         self.session.headers.update(const.USE_HEADERS)
 
     def get_slots(self):
-        resp = self.session.post(const.ENDPOINT_SILAB_SLOTS)
+        if self.token is None:
+            resp = self.session.post(const.ENDPOINT_SILAB_SLOTS)
+        else:
+            resp = self.session.post(const.ENDPOINT_SILAB_SLOTS, headers={
+                "authorization": "Bearer " + self.token
+            })
         assert resp.status_code == 200
         return resp.json()["rooms"]
 
