@@ -117,12 +117,14 @@ book -cf abc --id 123132"""
 @subcommand()
 def list_silab(args):
     lab = silab.SiLab()
-    print("Date\t\tDaytime\t\tBookings\tBooked\tID")
-    for slot in lab.get_slots()[0]["slots"]:
+    print("Date\t\tDaytime\t\tSeats left\tBooked\tID")
+    data = lab.get_slots()[0]
+    capacity = data["capacity"]
+    for slot in data["slots"]:
         if slot["daytime"] == "afternoon":
-            print(f'{slot["date"]}\t{slot["daytime"]}\t{slot["bookings"]}\t\t{slot["bookedbyme"]}\t{slot["slotid"]}')
+            print(f'{slot["date"]}\t{slot["daytime"]}\t{capacity - slot["bookings"]}\t\t{slot["bookedbyme"]}\t{slot["slotid"]}')
         else:
-            print(f'{slot["date"]}\t{slot["daytime"]}\t\t{slot["bookings"]}\t\t{slot["bookedbyme"]}\t{slot["slotid"]}')
+            print(f'{slot["date"]}\t{slot["daytime"]}\t\t{capacity - slot["bookings"]}\t\t{slot["bookedbyme"]}\t{slot["slotid"]}')
 
 
 @subcommand([
