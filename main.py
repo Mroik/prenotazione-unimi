@@ -117,6 +117,8 @@ book -cf abc --id 123132"""
 @subcommand()
 def list_silab(args):
     lab = silab.SiLab()
+    if args.username and args.password:
+        lab.login(args.username, args.password)
     print("Date\t\tDaytime\t\tSeats left\tBooked\tID")
     data = lab.get_slots()[0]
     capacity = data["capacity"]
@@ -151,7 +153,8 @@ def book_silab(args):
         raise ValueError("Insert login credentials")
     lab = silab.SiLab()
     lab.login(args.username, args.password)
-    args.exclude_day = helpers.parse_weekday(args.exclude_day)
+    if args.exclude_day:
+        args.exclude_day = helpers.parse_weekday(args.exclude_day)
     if args.all:
         for slot in lab.get_slots()[0]["slots"]:
             if slot["bookedbyme"]:
@@ -161,6 +164,12 @@ def book_silab(args):
                 continue
             if lab.book_slot(slot["slotid"]):
                 print("Booked {} {}".format(date.date(), slot["daytime"]))
+    else:
+        for id_ in args.id:
+            if lab.book_slot(id_):
+                print("Booked slot {}".format(id_))
+            else:
+                print("Couldn't book slot {}".format(id_))
 
 
 def main():
