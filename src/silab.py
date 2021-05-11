@@ -35,7 +35,7 @@ class SiLab:
         assert self.token is not None
 
         resp = self.session.post(
-            const.ENDPOINT_SILAB_BOOK + slotid,
+            const.ENDPOINT_SILAB_BOOK + str(slotid),
             headers={
                 "authorization": "Bearer " + self.token
             }
