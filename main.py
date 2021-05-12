@@ -1,6 +1,9 @@
 import argparse
+import json
+from datetime import datetime
 
-from easystaff import helpers
+from src import helpers
+from src import silab
 
 root = argparse.ArgumentParser(add_help=True)
 root.add_argument("-u", "--username", help="your unimi email (e.g. mario.rossi@studenti.unimi.it)", type=str)
@@ -34,7 +37,7 @@ def subcommand(items=None, parent=actions):
 
 
 @subcommand()
-def list_(args):
+def list_lessons(args):
     es = helpers.login(args)
     lectures = es.get_all_lectures()
     helpers.print_lectures(lectures)
@@ -78,7 +81,7 @@ def list_(args):
         nargs='+',
     ),
 ])
-def book(args):
+def book_lesson(args):
     """Book one or more lectures.
 Example usages:
 book -cf abc -a
@@ -111,6 +114,68 @@ book -cf abc --id 123132"""
         print("No lectures matched the provided filters.")
 
 
-if __name__ == "__main__":
+@subcommand()
+def list_silab(args):
+    lab = silab.SiLab()
+    if args.username and args.password:
+        lab.login(args.username, args.password)
+    print("Date\t\tDaytime\t\tSeats left\tBooked\tID")
+    data = lab.get_slots()[0]
+    capacity = data["capacity"]
+    for slot in data["slots"]:
+        if slot["daytime"] == "afternoon":
+            print(f'{slot["date"]}\t{slot["daytime"]}\t{capacity - slot["bookings"]}\t\t{slot["bookedbyme"]}\t{slot["slotid"]}')
+        else:
+            print(f'{slot["date"]}\t{slot["daytime"]}\t\t{capacity - slot["bookings"]}\t\t{slot["bookedbyme"]}\t{slot["slotid"]}')
+
+
+@subcommand([
+    argument(
+        "--all", "-a",
+        help="Book everything (Avoid using this)",
+        action="store_true"
+    ),
+    argument(
+        "--id",
+        help="Book by ID",
+        nargs="+"
+    ),
+    argument(
+        "--exclude-day", "-ed",
+        help="If using --all this excludes by day",
+        nargs="+"
+    )
+])
+def book_silab(args):
+    if not args.all and not args.id:
+        raise ValueError("Use --help")
+    if not args.username or not args.password:
+        raise ValueError("Insert login credentials")
+    lab = silab.SiLab()
+    lab.login(args.username, args.password)
+    if args.exclude_day:
+        args.exclude_day = helpers.parse_weekday(args.exclude_day)
+    if args.all:
+        for slot in lab.get_slots()[0]["slots"]:
+            if slot["bookedbyme"]:
+                continue
+            date = datetime.strptime(slot["date"], "%Y-%m-%d")
+            if date.weekday() in args.exclude_day:
+                continue
+            if lab.book_slot(slot["slotid"]):
+                print("Booked {} {}".format(date.date(), slot["daytime"]))
+    else:
+        for id_ in args.id:
+            if lab.book_slot(id_):
+                print("Booked slot {}".format(id_))
+            else:
+                print("Couldn't book slot {}".format(id_))
+
+
+def main():
     arguments = root.parse_args()
     arguments.func(arguments)
+
+
+if __name__ == "__main__":
+    main()
