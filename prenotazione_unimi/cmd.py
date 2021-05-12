@@ -2,8 +2,8 @@ import argparse
 import json
 from datetime import datetime
 
-from src import helpers
-from src import silab
+from .core import helpers
+from .core import silab
 
 root = argparse.ArgumentParser(add_help=True)
 root.add_argument("-u", "--username", help="your unimi email (e.g. mario.rossi@studenti.unimi.it)", type=str)
@@ -160,7 +160,7 @@ def book_silab(args):
             if slot["bookedbyme"]:
                 continue
             date = datetime.strptime(slot["date"], "%Y-%m-%d")
-            if date.weekday() in args.exclude_day:
+            if args.exclude_day and date.weekday() in args.exclude_day:
                 continue
             if lab.book_slot(slot["slotid"]):
                 print("Booked {} {}".format(date.date(), slot["daytime"]))

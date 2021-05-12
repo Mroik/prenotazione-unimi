@@ -1,6 +1,6 @@
 import requests
 
-from src import const
+from . import const
 
 
 class SiLab:

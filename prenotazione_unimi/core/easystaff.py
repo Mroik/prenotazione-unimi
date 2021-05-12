@@ -5,7 +5,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from src import const
+from . import const
 
 
 class EasyStaff:
