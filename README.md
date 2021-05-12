@@ -12,7 +12,7 @@ pip install prenotazione-unimi
 
 Utilizzo
 =======
-Per vedere tutti gli utilizzi esegui `python3 main.py --help`. Puoi specificare
+Per vedere tutti gli utilizzi esegui `prenotazione-unimi --help`. Puoi specificare
 i parametri `--username`, `--password` e `--cf-code` utilizzando
 rispettivamente le variabili d'ambiente `UNIMI_USERNAME`, `UNIMI_PASSWORD` e
 `UNIMI_CF`.

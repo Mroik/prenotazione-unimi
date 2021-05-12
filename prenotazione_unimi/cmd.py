@@ -95,7 +95,8 @@ book -cf abc --id 123132"""
     lectures = es.get_all_lectures()
     date = helpers.parse_date(args.date)
     booked = []
-    args.exclude_day = helpers.parse_weekday(args.exclude_day)
+    if args.exclude_day:
+        args.exclude_day = helpers.parse_weekday(args.exclude_day)
     for lecture in lectures:
         if args.date and date != lecture["date"]:
             continue
@@ -103,7 +104,7 @@ book -cf abc --id 123132"""
             continue
         if args.exclude and any([bool(s.lower() in lecture["nome"].lower()) for s in args.exclude]):
             continue
-        if lecture["date"].weekday() in args.exclude_day:
+        if args.exclude_day and lecture["date"].weekday() in args.exclude_day:
             continue
         es.book_lecture(lecture["entry_id"], dummy=args.dry_run)
         booked.append(lecture)
