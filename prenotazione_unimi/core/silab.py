@@ -40,5 +40,7 @@ class SiLab:
                 "authorization": "Bearer " + self.token
             }
         )
+        if resp.status_code == 504:
+            return False
         assert resp.status_code == 200
         return True if resp.json()["status"] == "success" else False
