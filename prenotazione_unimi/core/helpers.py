@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
-import easystaff
+from . import EasyStaff
 
 
 def print_lectures(lectures, just_booked=False):
@@ -62,7 +62,7 @@ def login(args, cf_code_required=False):
     if cf_code_required and not cf_code:
         raise ValueError("Please provide your italian fiscal code via the --fiscal-code parameter or "
                          "the UNIMI_CF environment variable.")
-    return easystaff.EasyStaff(username=username, password=password, cf_code=cf_code)
+    return EasyStaff(username=username, password=password, cf_code=cf_code)
 
 
 def parse_date(date):
