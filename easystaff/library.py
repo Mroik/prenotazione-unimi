@@ -15,7 +15,7 @@ class Library:
         self.email = email
         self.session = requests.Session()
 
-    def _get_token():
+    def _get_token(self):
         resp = self.session.get(const.LIBRARY_ENDPOINT,
                                 params=(("include", "form"),))
         token = ""
@@ -60,7 +60,7 @@ class Library:
         assert risorsa != None
         return risorsa
 
-    def get_available_libraries():
+    def get_available_libraries(self):
         resp = self.session.get(const.LIBRARY_ENDPOINT,
                                 params=(("include", "form"),))
         avail_biblio = BeautifulSoup(resp.text, "html.parser").find_all(id="area")[0]
@@ -71,7 +71,7 @@ class Library:
         return libraries, services
 
     # This method is not really needed, I decided to keep it anyway
-    def get_available_dates(library, service):
+    def get_available_dates(self, library, service):
         resp = self.session.get(const.LIBRARY_AJAX_ENDPOINT, params=(
             ("tipo", "data_inizio_form"),
             ("area", library),
@@ -82,7 +82,7 @@ class Library:
     # Returns the available timeslots in datetime format, this way we can
     # extract date and time from it, the website itself uses unix timestamps,
     # so when booking convert back to unix
-    def get_avalilable_timeslots(self, library, service):
+    def get_available_timeslots(self, library, service):
         resp = self.session.post(
                 const.LIBRARY_ENDPOINT,
                 data={
@@ -101,7 +101,7 @@ class Library:
         timeslots = []
         for slot in BeautifulSoup(resp.text, "html.parser").find_all("p"):
             found = re.findall("(?<=timestamp'\)\.val\(')\d+", str(slot.get("onclick")))
-            if len(temp) == 0:
+            if len(found) == 0:
                 continue
             timeslots.append(datetime.fromtimestamp(int(found[0])))
         return timeslots
