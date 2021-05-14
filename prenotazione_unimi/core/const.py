@@ -9,6 +9,8 @@ USE_HEADERS = {
     'Connection': 'keep-alive',
     'TE': 'Trailers',
 }
+LIBRARY_ENDPOINT = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/index.php"
+LIBRARY_AJAX_ENDPOINT = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/ajax.php"
 ENDPOINT_SILAB_SLOTS = "https://api.di.unimi.it/rooms/slots"
 ENDPOINT_SILAB_LOGIN = "https://api.di.unimi.it/rooms/login"
 ENDPOINT_SILAB_BOOK = "https://api.di.unimi.it/rooms/book/1/"

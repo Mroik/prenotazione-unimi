@@ -2,6 +2,7 @@ import argparse
 import json
 from datetime import datetime
 
+from .core import library
 from .core import helpers
 from .core import silab
 
@@ -115,6 +116,33 @@ book -cf abc --id 123132"""
         print("No lectures matched the provided filters.")
 
 
+@subcommand([
+    argument(
+        "--full-name", "-fn",
+        help="Your full name e.g. \"First_name [Middle_name] Last_name\"",
+    ),
+    argument(
+        "--fiscal-code", "-cf",
+        help="Your IT fiscal-code",
+    ),
+])
+def list_libraries(args):
+    """Below each library is the service they provide"""
+    if not args.username or not args.full_name or not args.fiscal_code:
+        raise ValueError("You MUST specify username, full-name and fiscal-code")
+    lib = library.Library(args.fiscal_code, args.full_name, args.username)
+    results, services = lib.get_available_libraries()
+    print("ID\tLibrary")
+    print("Services")
+    for lib_id in results:
+        if lib_id == "":
+            continue
+        print(lib_id + "\t" + results[lib_id])
+        for service_id in services[lib_id]:
+            print(service_id, end="\t")
+        print()
+
+
 @subcommand()
 def list_silab(args):
     lab = silab.SiLab()
@@ -171,6 +199,67 @@ def book_silab(args):
                 print("Booked slot {}".format(id_))
             else:
                 print("Couldn't book slot {}".format(id_))
+
+
+@subcommand([
+    argument(
+        "--full-name", "-fn",
+        help="Your full name",
+    ),
+    argument(
+        "--fiscal-code", "-cf",
+        help="Your IT fiscal-code",
+    ),
+    argument(
+        "--library-id", "-libid",
+        help="The library ID to choose",
+    ),
+    argument(
+        "--service-id", "-servid",
+        help="The service ID of the library",
+    ),
+])
+def list_library_timeslots(args):
+    if not args.library_id or not args.service_id:
+        raise ValueError("Both library-id and service-id are REQUIRED")
+    if not args.username or not args.full_name or not args.fiscal_code:
+        raise ValueError("You MUST specify username, full-name and fiscal-code")
+    lib = library.Library(args.fiscal_code, args.full_name, args.username)
+    print("slotID\t\tTime")
+    for slot in lib.get_available_timeslots(args.library_id, args.service_id):
+        print(int(slot.timestamp()), slot.strftime("%d-%m-%Y %H:%M"), sep="\t")
+
+
+@subcommand([
+    argument(
+        "--full-name", "-fn",
+        help="Your full name",
+    ),
+    argument(
+        "--fiscal-code", "-cf",
+        help="Your IT fiscal-code",
+    ),
+    argument(
+        "--library-id", "-libid",
+        help="The library ID to choose",
+    ),
+    argument(
+        "--service-id", "-servid",
+        help="The service ID of the library",
+    ),
+    argument(
+        "--slot-id", "-sid",
+        help="Slot ID",
+    ),
+])
+def book_library(args):
+    if not args.library_id or not args.service_id or not args.slot_id:
+        raise ValueError("Library-id, service-id and slot-id are REQUIRED")
+    if not args.username or not args.full_name or not args.fiscal_code:
+        raise ValueError("You MUST specify username, full-name and fiscal-code")
+    lib = library.Library(args.fiscal_code, args.full_name, args.username)
+    lib.book_timeslot(args.library_id, args.service_id, args.slot_id)
+    print("Prenotazione effettuata") # I probably need to check the response first
 
 
 def main():
