@@ -203,6 +203,42 @@ def book_silab(args):
 
 @subcommand([
     argument(
+        "--all", "-a",
+        help="Book everything (Avoid using this)",
+        action="store_true"
+    ),
+    argument(
+        "--id",
+        help="Book by ID",
+        nargs="+"
+    )
+])
+def unbook_silab(args):
+    if not args.all and not args.id:
+        raise ValueError("Use --help")
+    if not args.username or not args.password:
+        raise ValueError("Insert login credentials")
+    lab = silab.SiLab()
+    lab.login(args.username, args.password)
+    if args.all:
+        for slot in lab.get_slots()[0]["slots"]:
+            if slot["bookedbyme"]:
+                continue
+            date = datetime.strptime(slot["date"], "%Y-%m-%d")
+            if args.exclude_day and date.weekday() in args.exclude_day:
+                continue
+            if lab.unbook_slot(slot["slotid"]):
+                print("Booked {} {}".format(date.date(), slot["daytime"]))
+    else:
+        for id_ in args.id:
+            if lab.unbook_slot(id_):
+                print("Unbooked slot {}".format(id_))
+            else:
+                print("Couldn't unbook slot {}".format(id_))
+
+
+@subcommand([
+    argument(
         "--full-name", "-fn",
         help="Your full name",
     ),

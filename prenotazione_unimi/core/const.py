@@ -14,3 +14,4 @@ LIBRARY_AJAX_ENDPOINT = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/bib
 ENDPOINT_SILAB_SLOTS = "https://api.di.unimi.it/rooms/slots"
 ENDPOINT_SILAB_LOGIN = "https://api.di.unimi.it/rooms/login"
 ENDPOINT_SILAB_BOOK = "https://api.di.unimi.it/rooms/book/1/"
+ENDPOINT_SILAB_UNBOOK = "https://api.di.unimi.it/rooms/unbook/1/"

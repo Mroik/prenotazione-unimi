@@ -21,11 +21,11 @@ class SiLab:
 
     def login(self, username, password):
         resp = self.session.post(
-            const.ENDPOINT_SILAB_LOGIN,
-            data={
-                "username": username,
-                "password": password
-            }
+                const.ENDPOINT_SILAB_LOGIN,
+                data={
+                    "username": username,
+                    "password": password
+                }
         )
         assert resp.status_code == 200
         self.token = resp.json()["jwt"]
@@ -35,10 +35,24 @@ class SiLab:
         assert self.token is not None
 
         resp = self.session.post(
-            const.ENDPOINT_SILAB_BOOK + str(slotid),
-            headers={
-                "authorization": "Bearer " + self.token
-            }
+                const.ENDPOINT_SILAB_BOOK + str(slotid),
+                headers={
+                    "authorization": "Bearer " + self.token
+                }
+        )
+        if resp.status_code == 504:
+            return False
+        assert resp.status_code == 200
+        return True if resp.json()["status"] == "success" else False
+
+    def unbook_slot(self, slotid):
+        assert self.token is not None
+
+        resp = self.session.post(
+                const.ENDPOINT_SILAB_UNBOOK + str(slotid),
+                headers={
+                    "authorization": "Bearer " + self.token
+                }
         )
         if resp.status_code == 504:
             return False
