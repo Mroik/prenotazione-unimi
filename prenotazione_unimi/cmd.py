@@ -222,13 +222,10 @@ def unbook_silab(args):
     lab.login(args.username, args.password)
     if args.all:
         for slot in lab.get_slots()[0]["slots"]:
-            if slot["bookedbyme"]:
-                continue
-            date = datetime.strptime(slot["date"], "%Y-%m-%d")
-            if args.exclude_day and date.weekday() in args.exclude_day:
+            if not slot["bookedbyme"]:
                 continue
             if lab.unbook_slot(slot["slotid"]):
-                print("Booked {} {}".format(date.date(), slot["daytime"]))
+                print("Unbooked {} {}".format(date.date(), slot["daytime"]))
     else:
         for id_ in args.id:
             if lab.unbook_slot(id_):
