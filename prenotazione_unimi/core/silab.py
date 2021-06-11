@@ -58,3 +58,13 @@ class SiLab:
             return False
         assert resp.status_code == 200
         return True if resp.json()["status"] == "success" else False
+
+    def get_penalty(self):
+        assert self.token is not None
+
+        resp = self.session.post(const.ENDPOINT_SILAB_SLOTS, headers={
+            "authorization": "Bearer " + self.token
+        })
+        assert resp.status_code == 200
+        resp = resp.json()["rooms"][0]
+        return resp["absences"], resp["maxbookings"]

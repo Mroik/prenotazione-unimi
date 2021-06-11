@@ -295,6 +295,17 @@ def book_library(args):
     print("Prenotazione effettuata") # I probably need to check the response first
 
 
+@subcommand()
+def silab_penalty(args):
+    if not args.username and not args.password:
+        raise ValueError("Username and password are required for this action")
+    lab = silab.SiLab()
+    lab.login(args.username, args.password)
+    abse, maxbook = lab.get_penalty()
+    print("Absences:", abse)
+    print("Max bookings allowed:", maxbook)
+
+
 def main():
     arguments = root.parse_args()
     arguments.func(arguments)
