@@ -68,3 +68,15 @@ class SiLab:
         assert resp.status_code == 200
         resp = resp.json()["rooms"][0]
         return resp["absences"], resp["maxbookings"]
+
+    def confirm_silab(self, room_id):
+        assert self.token is not None
+        resp = self.session.post(
+                const.ENDPOINT_SILAB_CONFIRM + str(room_id),
+                headers={
+                    "authorization": "Bearer " + self.token
+                }
+        )
+        if resp.status_code != 200:
+            raise Exception("Something went wrong")
+        return resp.json()["longMessage"]

@@ -306,6 +306,20 @@ def silab_penalty(args):
     print("Max bookings allowed:", maxbook)
 
 
+@subcommand([
+    argument(
+        "--room", "-r", type=int, required=True,
+        help="ID of the room to attend"
+    )
+])
+def confirm_silab(args):
+    if not args.username and not args.password:
+        raise ValueError("Username and password are required for this action")
+    lab = silab.SiLab()
+    lab.login(args.username, args.password)
+    print(lab.confirm_silab(args.room))
+
+
 def main():
     arguments = root.parse_args()
     arguments.func(arguments)
