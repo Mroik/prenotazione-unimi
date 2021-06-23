@@ -9,9 +9,7 @@ from .core import silab
 root = argparse.ArgumentParser(add_help=True)
 root.add_argument("-u", "--username", help="your unimi email (e.g. mario.rossi@studenti.unimi.it)", type=str)
 root.add_argument("-p", "--password", help="your unimi password", type=str)
-actions = root.add_subparsers(title="actions")
-actions.required = True
-actions.dest = "action"
+actions = root.add_subparsers(required=True, metavar="ACTION", dest="action")
 
 
 def argument(*name_or_flags, **kwargs):
@@ -24,8 +22,7 @@ def subcommand(items=None, parent=actions):
 
     def decorator(func):
         parser = parent.add_parser(func.__name__.rstrip("_"),
-                                   description=func.__doc__,
-                                   formatter_class=argparse.RawTextHelpFormatter)
+                help=func.__doc__)
         for item in items:
             if type(item) is list:
                 group = parser.add_mutually_exclusive_group()
@@ -39,6 +36,7 @@ def subcommand(items=None, parent=actions):
 
 @subcommand()
 def list_lessons(args):
+    """Lists available lessons based on your profile"""
     es = helpers.login(args)
     lectures = es.get_all_lectures()
     helpers.print_lectures(lectures)
@@ -83,12 +81,7 @@ def list_lessons(args):
     ),
 ])
 def book_lesson(args):
-    """Book one or more lectures.
-Example usages:
-book -cf abc -a
-book -cf abc --exclude "linguaggi formali e automi"
-book -cf abc --date today
-book -cf abc --id 123132"""
+    """Book one or more lectures."""
     if not args.all and not args.date and not args.id:
         raise ValueError("Use --help to see usage")
 
@@ -127,7 +120,7 @@ book -cf abc --id 123132"""
     ),
 ])
 def list_libraries(args):
-    """Below each library is the service they provide"""
+    """Lists available libraries and related services"""
     if not args.username or not args.full_name or not args.fiscal_code:
         raise ValueError("You MUST specify username, full-name and fiscal-code")
     lib = library.Library(args.fiscal_code, args.full_name, args.username)
@@ -145,6 +138,7 @@ def list_libraries(args):
 
 @subcommand()
 def list_silab(args):
+    """Lists available timeslots for booking for SiLab"""
     lab = silab.SiLab()
     if args.username and args.password:
         lab.login(args.username, args.password)
@@ -176,6 +170,7 @@ def list_silab(args):
     )
 ])
 def book_silab(args):
+    """Books a seat in SiLab"""
     if not args.all and not args.id:
         raise ValueError("Use --help")
     if not args.username or not args.password:
@@ -214,6 +209,7 @@ def book_silab(args):
     )
 ])
 def unbook_silab(args):
+    """Cancels a booking for SiLab"""
     if not args.all and not args.id:
         raise ValueError("Use --help")
     if not args.username or not args.password:
@@ -253,6 +249,7 @@ def unbook_silab(args):
     ),
 ])
 def list_library_timeslots(args):
+    """Lists available bookings for a specific library"""
     if not args.library_id or not args.service_id:
         raise ValueError("Both library-id and service-id are REQUIRED")
     if not args.username or not args.full_name or not args.fiscal_code:
@@ -286,6 +283,7 @@ def list_library_timeslots(args):
     ),
 ])
 def book_library(args):
+    """Books a seat in the library"""
     if not args.library_id or not args.service_id or not args.slot_id:
         raise ValueError("Library-id, service-id and slot-id are REQUIRED")
     if not args.username or not args.full_name or not args.fiscal_code:
@@ -297,6 +295,7 @@ def book_library(args):
 
 @subcommand()
 def silab_penalty(args):
+    """Shows your penalties for SiLab"""
     if not args.username and not args.password:
         raise ValueError("Username and password are required for this action")
     lab = silab.SiLab()
@@ -313,6 +312,7 @@ def silab_penalty(args):
     )
 ])
 def confirm_silab(args):
+    """Confirms your attendance at SiLab"""
     if not args.username and not args.password:
         raise ValueError("Username and password are required for this action")
     lab = silab.SiLab()

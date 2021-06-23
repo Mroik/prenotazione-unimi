@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="prenotazione-unimi",
-    version="1.1.4",
+    version="1.1.4-1",
     author="Mroik",
     author_email="mroik@delayed.space",
     description="Command line program that handles booking for lessons at UNIMI and other stuff.",
