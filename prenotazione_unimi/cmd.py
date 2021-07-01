@@ -221,7 +221,7 @@ def unbook_silab(args):
             if not slot["bookedbyme"]:
                 continue
             if lab.unbook_slot(slot["slotid"]):
-                print("Unbooked {} {}".format(date.date(), slot["daytime"]))
+                print("Unbooked {} {}".format(slot["date"], slot["daytime"]))
     else:
         for id_ in args.id:
             if lab.unbook_slot(id_):
