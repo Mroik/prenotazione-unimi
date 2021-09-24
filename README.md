@@ -1,4 +1,4 @@
-# Prenotazione Automatica Unimi
+# Prenotazione Unimi
 Questo script serve per prenotare automaticamente le lezioni in presenza dell'
 UNIMI durante il periodo di quarantena. Idealmente è uno script da utilizzare
 con cron.
