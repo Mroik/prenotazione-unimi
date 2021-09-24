@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="prenotazione-unimi",
-    version="1.1.4-2",
+    version="1.1.4-3",
     author="Mroik",
     author_email="mroik@delayed.space",
     description="Command line program that handles booking for lessons at UNIMI and other stuff.",
@@ -21,7 +21,7 @@ setuptools.setup(
     ],
     package_dir={"": "./"},
     packages=setuptools.find_packages(where="./"),
-    python_requires=">=3.9",
+    python_requires=">=3.7",
     install_requires=[
         "beautifulsoup4>=4.9.3",
         "requests>=2.25.1"
