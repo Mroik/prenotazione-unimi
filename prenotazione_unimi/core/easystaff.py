@@ -105,3 +105,8 @@ class EasyStaff:
             ('id_btn_element', f"{lecture_id}"),
         ))
         assert booking_res.status_code == 200
+        res = booking_res.json()
+        if res["result"] == "Success":
+            return True
+        else:
+            return False

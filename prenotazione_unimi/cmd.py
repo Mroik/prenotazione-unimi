@@ -100,7 +100,9 @@ def book_lesson(args):
             continue
         if args.exclude_day and lecture["date"].weekday() in args.exclude_day:
             continue
-        es.book_lecture(lecture["entry_id"], dummy=args.dry_run)
+        ris = es.book_lecture(lecture["entry_id"], dummy=args.dry_run)
+        if ris:
+            lecture["prenotata"] = True
         booked.append(lecture)
     if len(booked) > 0:
         print(f"Booked {len(booked)} lectures.")
