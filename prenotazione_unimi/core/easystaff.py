@@ -110,3 +110,15 @@ class EasyStaff:
             return True
         else:
             return False
+
+    def unbook_lecture(self, lecture_id, dummy=False):
+        if dummy:
+            return print("(DRY-RUN) Booking", lecture_id)
+        booking_res = self.session.get("https://easystaff.divsi.unimi.it/PortaleStudenti/call_ajax.php", params=(
+            ('language', 'it'),
+            ('mode', 'cancella_prenotazioni'),
+            ('codice_fiscale', self.cf_code),
+            ('id_entries', f"[{lecture_id}]"),
+            ('id_btn_element', f"{lecture_id}"),
+        ))
+        assert booking_res.status_code == 200

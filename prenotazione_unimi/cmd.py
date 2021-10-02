@@ -113,6 +113,42 @@ def book_lesson(args):
 
 @subcommand([
     argument(
+        "--fiscal-code", "-cf",
+        help="your IT fiscal code (e.g. RSAMRA70A41F205Z). you can use the UNIMI_CF environment variable, too."
+    ),
+    [
+        argument(
+            "--all", "-a",
+            help="book ALL the available lectures (use this with responsibility)",
+            action="store_true",
+        ),
+        argument(
+            "--id",
+            help="book a specific lesson with its ID",
+            nargs='+',
+            type=int,
+        ),
+    ],
+])
+def unbook_lesson(args):
+    """Unbooks one or more lectures"""
+    if not args.all and not args.id:
+        raise ValueError("Use --help to see usage")
+
+    es = helpers.login(args, cf_code_required=True)
+    lectures = es.get_all_lectures()
+    if not args.all:
+        for id_ in args.id:
+            es.unbook_lecture(id_, dummy=False)
+            print(f"Unbooked {id_}")
+        return
+    for lecture in lectures:
+        es.unbook_lecture(lecture["entry_id"], dummy=False)
+        print(f"Unbooked {lecture['entry_id']}")
+
+
+@subcommand([
+    argument(
         "--full-name", "-fn",
         help="Your full name e.g. \"First_name [Middle_name] Last_name\"",
     ),
