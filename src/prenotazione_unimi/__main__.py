@@ -1,12 +1,15 @@
 import argparse
-from easystaff import Easystaff
+from prenotazione_unimi.easystaff import Easystaff
 
 
 def list_lessons(args):
     a = Easystaff()
     a.login(args.u, args.p)
     lessons = a.get_lessons()
-    print(lessons)
+    for day in lessons:
+        print(day["data"])
+        for lesson in day["prenotazioni"]:
+            print(f"\t{lesson['nome']} {lesson['ora_inizio']} {lesson['entry_id']}")
 
 
 def book_lesson(args):
