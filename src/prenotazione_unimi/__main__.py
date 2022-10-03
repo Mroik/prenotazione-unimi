@@ -9,7 +9,8 @@ def list_lessons(args):
     for day in lessons:
         print(day["data"])
         for lesson in day["prenotazioni"]:
-            print(f"\t{lesson['nome']} {lesson['ora_inizio']} {lesson['entry_id']} | prenotata: {lesson['prenotata']}")
+            print(f"\t{lesson['nome']} {lesson['ora_inizio']} {lesson['entry_id']} | booked: {lesson['prenotata']}"
+                    f" | free slots: {lesson['capacita']-lesson['presenti']}/{lesson['capacita']}")
 
 
 def book_lesson(args):
