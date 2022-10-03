@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="prenotazione-unimi",
-    version="2.0.2",
+    version="2.0.3",
     author="Mroik",
     author_email="mroik@delayed.space",
     description="Command line program that handles booking for lessons at UNIMI",
